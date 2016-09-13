@@ -1,0 +1,10 @@
+* 2016/01
+** 2016/01/08
+*** 与lisp的前缀表示法不同，js的call与apply实际上还是调用的"."前面的函数，只不过它所使用的this对象改变了，这种方式一般用来处理函数一样，而对象一直改变的情况，这一特性比较适合于用来编写通用工具函数，比如算坐标投影（传不同的对象坐标），事件分发（传不同的事件信息）等。与一般的写工具函数的方法相比，这种写法能够实现对象与方法完全解耦，对象并不需要一定有这个方法就能
+*** js的事件机制实际上是这样实现的：方法总是那么几个，像click、keydown等，只不过要调用这个方法的对象不断变化，这个时候是这个DOM节点，那个时候是那个DOM节点，每个节点结构一样，这个结构就是事件，就是数据不一样，这几个方法要根据这个对象里面的数据做出统一的处理，分发到不同的处理函数里面去，这就是事件处理函数。所以说，事件函数需要完成一个中转，将指定的DOM节点发出的事件传递给不同的事件处理函数。
+** 2016/01/13
+*** what is dispatch？ dispatch is a middle object which is used to create or trigger a event.It is usually used in the end of a function.It is a bridge to connect event code and event handler.Every object can use dispatch to trigger a event,and dispatch will call the functions linked to the event in order.
+*** what is event?Event is a Tool which is used to stop event flow.By using event,We can 
+** 2016/01/24
+*** what is infomation?It is a stream of numbers,a stream of encoded numbers.So Encoding is the base of programming.Programming is a procegure to handle the numbers.
+*** Encoding can be nested.When code is nested,it can present more complex case. 
