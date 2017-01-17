@@ -17,29 +17,29 @@
 我们首先考虑两元排列组合问题。
 	1. 首先是排列算法，排列算法只需要两层遍历，然后过滤到自己与自己就可以了，算法如下：
 function arrange(collection){
-  for(let i = 0;i < collection.length;++i){
-    for(let j = 0;j < collection.length;++j){
-      if(i === j){
-        continue;
-      }
-      let item1 = collection[i];
-      let item2 = collection[j];
-      console.log(item1,item2);
-    }
-  }
+	for(let i = 0;i < collection.length;++i){
+		for(let j = 0;j < collection.length;++j){
+			if(i === j){
+				continue;
+			}
+			let item1 = collection[i];
+			let item2 = collection[j];
+			console.log(item1,item2);
+		}
+	}
 }
 
 //arrange([1,2,3,4]);
     2. 然后是组合算法，组合算法也是两层遍历，然后过滤掉自己以及自己前面的元素就可以了，算法如下：
 function combination(collection){
-  for(let i = 0;i < collection.length;++i){
-    for(let j = i + 1;j < collection.length;++j){
-      let item1 = collection[i];
-      let item2 = collection[j];
+	for(let i = 0;i < collection.length;++i){
+		for(let j = i + 1;j < collection.length;++j){
+			let item1 = collection[i];
+			let item2 = collection[j];
 
-      console.log(item1,item2);
-    }
-  }
+			console.log(item1,item2);
+		}
+	}
 }
 
 //combination([1,2,3,4]);
@@ -108,3 +108,111 @@ function combination(collection) {
 *** 指数级算法————循环加递归。
 *** 单例模式有个需要格外注意的问题————资源释放，由于单例对象不会被释放，该对象上持有的子对象上的资源是并不会随着离开页面跳转释放掉的，你可以不管大单例对象上的资源，但有些子资源你还是得自己维护的。
 *** TIPS 在chrome中，我们想要查看某个元素下绑定的所有事件有个简单的方法，定位到该元素下，然后查看Event Linstener TAB页，所有绑定在该元素下的事件，不管是通过onXXX还是addEventLinsenter添加的事件你都能很清楚的看到了。
+** 2017/01/11
+*** 编程语言中的或（也就是||）用在if条件中的时候，相当于把两个if分支中的语句合在一个分支，这在两个分支中的语句一样的时候是有用的，例如：
+if(bCondA){
+	//...someCode1
+}
+else if(bCondB){
+	//...someCode1
+}
+else{
+	//...someCode2
+}
+等价于
+if(bCondA || bCondB){
+	//...someCode1
+}
+else{
+	//...someCode2
+}
+同理，编程语言中的且（也就是&&）用在if条件中的时候，相当于把两层if分支中的语句合成一个层，例如：
+if(bCondA){
+	if(bCondB){
+		//...someCode1
+	}
+}
+等价于
+if(bCondA && bCondB){
+	//...someCode1
+}
+注意前者是两个，后者是两层。
+*** TIPS emacs的org-mode有个easy templates功能，允许我们快速插入模板代码，只需要我们输入<(template selector)然后按tab就行了，这个功能非常方便，比如：
+s	#+BEGIN_SRC ... #+END_SRC 
+e	#+BEGIN_EXAMPLE ... #+END_EXAMPLE
+q	#+BEGIN_QUOTE ... #+END_QUOTE 
+v	#+BEGIN_VERSE ... #+END_VERSE 
+c	#+BEGIN_CENTER ... #+END_CENTER 
+l	#+BEGIN_LaTeX ... #+END_LaTeX 
+L	#+LaTeX: 
+h	#+BEGIN_HTML ... #+END_HTML 
+H	#+HTML: 
+a	#+BEGIN_ASCII ... #+END_ASCII 
+A	#+ASCII: 
+i	#+INDEX: line 
+I	#+INCLUDE: line
+非常方便。
+*** IMPORTANT 什么是元编程？元编程就是自己写解释器Parser，它不同于一般编程只是写数据的是，它会在数据里面包含动作，每当碰到动作的时候，需要执行特定的指定的函数，这就对我们的写程序提出了更高的要求，但由此带来的好处是惊人的，就是我们可以用更短的数据表述更加复杂的问题了，而且能够更灵活的表述问题，而不是一滩死的数据。
+*** IMPORTANT org-mode实际上追求的是一种纯文本的网页，写文档实际上是一种非常纯粹的事情，我们并不需要在文档中插入很多图片、图表等乱七八糟的东西，我们并不需要在各种强大的编辑器之间切来切去，所有的这些东西都可以通过简单的文本来表述，这就是org-mode所追求的东西，我们只需要写好自己的文本，专注于真正需要专注的东西，在需要对外发布的时候转换成对外的格式就行了，由于是纯文本，管理维护起来非常简单。
+*** 实际上emacs所追求的又何尝不是强大的纯文本编辑能力呢，只做文本编辑，不做其他的事情，这些事情交给各种强大三方拓展去做，它们做的更好，我们只需要安安静静的做做文本编辑就行了。要做到这一点，首先必须提供极其强大的编辑能力，然后是极强的拓展性，兼容各种三方插件与程序，让它们可以被很容易的集成进编辑器，拓展编辑器在其他方面的能力，这样各种各样的工作就完成了。
+*** TODO 使用callback处理不断的异步回调，而不是promise.
+*** IMPORTANT BOOTCDN，测试新的第三方函数库的神器。当我们只是想测试下某个库却又不想去走复杂的quickStart流程的时候，这个神器就出场了，打开这个网站找到我们需要的库，复制出库标签，添加到html文件中就可以愉快的测试了，非常简单。
+*** TODO 我需要高屋建瓴式的思维，把问题想得简单，不能有畏难情绪。
+*** TODO 有两种封装，一种是函数封装，一种是对象封装。对象封装是比函数封装更难的东西。
+*** TODO 将ajax封装进请求
+*** js函数有两种写法，一种是处理函数写法，一种是类函数写法。
+*** TIPS 面向对象重数据的管理而不是处理过程，因此适合于用来做一些数据管理的工作，而不是复杂的过程，复杂的过程应该使用函数式编程方法来做。
+*** TODO what is pipe?pipe is just a process which called a function many times and in a same object,it is very powerful.用中文来说就是调用同一个对象上的同一个方法多次，并且将前一次调用的结果返回给后一个过程的过程。
+*** what is autocomplate?autocomplate is a function which accept a keyword and return a array of word,by this way,we can select a similar word by a word,improve our ability of input word.
+** 2017/01/12
+*** 如何给一个回调函数传递参数，一种非常常见的方式是通过在函数外再包一层函数并返回这个函数，然后在外层函数中传递参数，这样就能实现外层传递参数并传递函数，然后在函数中进行处理了，代码如下：
+#+BEGIN_SRC js
+  function test1(...arg) {
+      return function test(callback) {
+          callback(...arg);
+      }
+  }
+
+  test1(100,200,300,'abc')((...arg) => console.log(arg)); //output: [100, 200, 300, "abc"]
+#+END_SRC
+这种方式极其有用，用这种方式写出来的代码输入、处理于输出都非常清晰，从前到后，非常符合人们的思维习惯。
+*** JSONP实现原理：资源请求方为A，被请求方为B,我们需要在A中定义一个函数，然后通过脚本请求在B中调用这个函数，然后函数参数就会进入A中的函数体，这样我们就要到了我们需要的资源。使用JSONP进行跨域请求时，请求数据就是定义特定的函数然后通过加载script标签调用这个函数，函数参数就是我们需要的数据。
+*** dom元素压盖总结，父元素层级高的元素在上面（拼爹，由于fixed是相对于浏览器窗口定位，层级最高，所以它总是在上面），如果父元素相同，比较是采用的哪种定位，绝对定位=相对定位>静态定位。
+*** 块级元素静态定位元素的宽度是占满父元素的，但是如果使用relative与absolute的话，它的父元素就没有了，这样它的宽度就只是到内容就没有了。
+*** 【强制】不得使用外键与级联，一切外键概念必须在应用层解决。
+说明：（概念解释）学生表中的student_id是主键，那么成绩表中的student_id则为外键。如果更新学生表中的student_id，同时触发成绩表中的student_id更新，则为级联更新。外键与级联更新适用于单机低并发，不适合分布式、高并发集群；级联更新是强阻塞，存在数据库更新风暴的风险；外键影响数据库的插入速度。
+*** IMPORTANT 再次强调一下，callback实际上是输出，跟return是一样的东西，只不过return一般用来输出同步调用的结果，callback用来输出异步调用的结果。或者更进一步说不管是同步的结果还是异步的结果都可以用callback来输出，它实际上是通用的。
+*** IMPORTANT 使用callback可以继续抽象函数，尤其是异步函数，而且是这一种强有力的抽象方法。通过它，我们可以封装异步请求了，再也不用将一步步异步请求写在一个函数里面了。
+*** TIPS 通过定义函数，我们可以延长函数的参数，传入更多的参数给一个多参的函数，同时暴露更短的函数接口，将具体的求值过程隐藏给用户，简化问题的规模，让问题变得简单。
+** 2017/01/13
+*** 要想函数返回多值除了将多值封装在一个对象里面通过return返回外，还有个方法就是使用callback，而且使用callback更通用。
+*** 在一个渲染引擎中计算的时机非常重要，如果引擎动了而它上面的东西没有跟着动，很有可能就是渲染的时机不对。
+*** openlayer的最大分辨率（maxResolution）表示在最小比例尺下，比如dynamic_limit是4，一像素代表多少米。同理，推广开来，resolution
+*** IMPORTANT 什么是公式？公式实际上是用户在不断求解问题的过程中发现的一种简记法，类似于缓存，这样当我们再次碰到同样的问题的时候，就可以快速反应出来它实际上是等价于另一种写法的，在这种变换的过程中我们往往能够能够改变问题的规模，将复杂的问题变得简单，将简单的问题变得更简单，进而得到问题的解。其实，定义一个问题只是为了描述这一问题，但便于描述却并不一定便于求解，因此才会有各种形形色色的性质以及公式，有了它们，我们便可以直接利用这些性质或是公式，快速得到问题的解了。
+** 2017/01/16
+*** RxJS全名Reactive Extensions for JavaScript，Javascript的响应式扩展。响应式的思路是把随时间不断变化的数据、状态、事件等等转成可被观察的序列(Observable Sequence)，然后订阅序列中那些Observable对象的变化，一旦变化，就会执行事先安排好的各种转换和操作。
+	在这个概念中，需要格外注意的词一个是“时间”。
+*** 数组 + 时间轴 = Observable
+*** IMPORTANT 实际上，我们一直以来定义函数的方式也许是错误的，正确的写函数方法也许是：
+	args --> funcName --> retValue，而不是我们平常的写法
+	retValue --> funcName --> args，正好是个相反的关系
+	为什么这样写是更好的方式呢？
+	因为这样写是输入 --> 处理 --> 输出的处理流，更符合人们的思维习惯。
+	如何实现这一编程模式呢？
+	答案是使用回调参数，将函数的返回值写到后面去，这样函数的结果就被放到了最后。
+	下面看看使用案例:
+	1. Promise。只不过它还多封装了一层，将回调函数封装在Promise对象的参数中。
+	2. requirejs。它把依赖写在前面，依赖完成后通过回调函数取依赖的结果。
+	3. PIPE。
+	4. RxJS。
+*** TODO 编程过程中异步问题（或者说时序问题）是个极其不好弄的东西，需要好好的思考下。RxJS就是对于这个问题的一种解决方案。
+*** 将一个函数封装在回调函数中可以实现后处理，在函数调用前做一些事情，这是一种非常常用的方式。
+** 2017/01/17
+*** 如今事件系统受到了越来越多的重视，其根本原因在于它并不简简单单是一个用来在在全局传递消息的工具，更是一个很好的异步处理黏合剂，是异步模型中非常重要的一环。
+*** 延迟加载的问题不解决，图层加载的问题就很难解决。
+*** requirejs的加载顺序问题是个很坑的问题，容易出错。如果不能正确理清依赖加载顺序，那么出错在所难免。
+*** IMPORTANT requirejs只能提前把所有的js依赖都加载完毕了执行，但是如果这个依赖并不是个js文件，比如是某个时间点，某个事件，某个函数调用，这种依赖加载方式就无能为力了，我们急需要一种按需加载的能力，在我们需要的时候加载文件，这本是seajs所追求的，但是如果你想保持requirejs为主加载器，不想引入seajs的话，lazyRequire可以帮助你，它通过对requirejs进行简单封装，实现了按需加载，只有真正调用到它的require函数的时候才会加载依赖，大大拓展了requirejs的灵活性。
+*** DONE 其实requirejs而言，单纯的异步加载是很容易做到的，但是不好弄的是异步的异步，有些文件需要在某个文件的某个函数执行完毕之后再加载，这个问题怎么弄？答案是按需加载，也就是真正调用require的时候才进行模块加载，这就是lazyRequire所干的事情了。
+*** 提前加载，延后执行，这就是requirejs。真是天坑，擅自将代码提前加载，代码的真正执行顺序并不由写的顺序决定，这是一个非常愚蠢的决定。代码并不以写代码的顺序进行加载，这种反用户自觉的功能必然引发无尽的bug。
+*** TIPS 写函数库优于写框架，因为函数库会限定死程序的上层结构，这在重构时会造成很大的麻烦，应该尽可能的写函数库，给开发人员自己组织结构的自由，这样后期的拓展性才会更好。
+*** IMPORTANT 其实web编辑器重构之后，代码纵向的拆分是不错的，但是横向拆分就很差了，远远不如事件平台，事件平台的内核是非常小的，最核心的也就一个类机制(god.js实现)，一个图层管理机制(switchLayer.js  --> layer-amap.js --> Layers.js --> layerSelector.js,由switchLayer作为起点，加载所有的图层)，然后所有的功能都做在图层上，而且单个图层跟其他图层是基本没有耦合，可以非常轻松的把这个图层启用、取消以及移植到其他平台，这样它的可维护性就非常好了。由于代码结构简单，可以很容易的与其他框架进行组合，比如angularjs、bootstrap等（其实react、redux、vue也应该是非常容易引入的）。
