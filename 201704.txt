@@ -1,0 +1,151 @@
+* 2017/04
+** 2017/04/01
+*** 模块化是什么呢？减少入口与出口，使得功能非常好移植。
+*** 函数式编程不依赖于其他外部变量，非常便于测试。
+** 2017/04/04
+*** 为什么不要直接调用三方库的API接口，而要封装下再调用，因为这样能实现钩子函数。
+** 2017/04/07
+*** Monad实际上就是一种封装数据类型,函数接受这种数据类型并且返回这种数据类型，使得计算能够带着值一直计算下去。Promise实际上就是一种函子，通过一直返回Promise使得我们可以将函数连接起来。
+*** IMPORTANT 很多时候，我们获取了某个数据，但却没有办法在这个地方处理它，这个时候，不妨把这个数据传递到它所依赖的其他地方（或者再加个依赖传过去），这样就可以处理了，而且这样做出来的效果往往非常好。
+*** IMPORTANT 写代码就是一个流，用户操作只不过是流中的一个节点，实际上就是一个不知道什么时候到来的异步代码，掌握这个方法，写起代码来回容易很多。
+** 2017/04/08
+*** 状态这个东西，越少越好，越多维护起来越困难，但是多数时候我们不得不使用状态，这时候我们只能保证控制状态的数量，使得它越少越好。
+*** 函数定义与函数调用。函数定义是添加函数到当前scope的过程，函数调用是变量绑定与函数体求值的过程。关于变量绑定，angular的依赖注入是典型的例子，例如：
+    ['aaa','bbb','ccc',(aaa,bbb,ccc) => {
+        ...
+    }]
+    这个实际上就是做了一次变量绑定，它的实现原理就是一次函数调用，从而将数组前面的变量绑定到了后面的函数参数中，就像这样：
+    function abc(...args){
+        let lastArgs = args.pop();
+		let restArgs = args;
+		
+		let restScopes = restArgs.map(name => name + '!');
+		lastArgs(...restScopes);
+	}
+
+	abc('aaa','bbb','ccc',function (aaa,bbb,ccc) {
+        console.log(aaa,bbb,ccc); //aaa! bbb! ccc!
+		...
+	});
+** 2017/04/11
+*** 数据的变化应该是可以被追溯的，如果我们直接使用等号赋值，那么当这个数据变化了以后，我们根本无法判断这个数据是在哪个地方发生的变化，调试起来会非常复杂。更好的做法是使用函数赋值，这样追踪起数据来就会非常简单。
+** 2017/04/12
+*** IMPORTANT 面向接口编程是一种自上而下的编程方式，这种方式写出来的代码整体结构会非常清晰，但并不利于下层重用；面向实现编程是一种自下而上的编程策略，这种方式写出来的代码函数的复用性会非常好，能够最大限度的消除重复，但是写完后代码的整体结构可能没有那么规整。综合权衡之下，应该两种方式混合起来使用，先自上而下写好接口，然后自下而上去抽象函数，直到两种方式对接在一起，这样写出来的代码才能既保证清晰的接口，又能保证最好的函数复用度。我之前更加习惯于自下而上的编程方式，今后要有意识的先自上而下，然后再自下而上。
+*** js中有六大类数据类型，五种基本数据类型（undifined/null/bool/number/string），一种引用数据类型(object,主要有object/array/function三种)。每种数据类型都有自己的一堆操作。实际上数据类型就是一堆值，它上面会有对应的一堆操作，用来实现值的变换。
+*** 我们完全可以把数据处理的过程，定义成一种与参数无关的合成运算。不需要用到代表数据的那个参数，只要把一些简单的运算步骤合成在一起即可。这就叫做 Pointfree：不使用所要处理的值，只合成运算过程。中文可以译作"无值"风格。————阮一峰《Pointfree编程风格指南》
+*** 函数式编程主张Pointfree风格，合成运算，生产新函数，中间不涉及数据，数据只在最后出现在两端。这样写出来的代码非常简短，而且语义非常清晰。
+*** TIPS git撤销最后一次commit: git reset HEAD~1或者git reset HEAD^，不用使用git log去查版本号。(值得注意的是，不知可以reset到之前的版本，还可以reset到未来的版本哦，即使reset --hard也是没有问题的)。
+	友好的gitlog打印方式： git log --pretty=oneline
+*** TIPS inline-block无法解决行内元素间的空白问题，要想解决，常用的方法：font-size（容易被继承），负margin（会有字号问题、浏览器问题引起的像素不一的问题），不过都有副作用，有一种方法可以很好的解决这一问题————flex布局，在父元素上使用flex布局，这样不止空白的问题没有了，而且可以使用margin/padding了，非常好用。
+*** TIPS 很多js的库是前后端兼容的，不止前端可以用，后端的node也可以无缝使用，比如Ramda/lodash/undersorce等。
+** 2017/04/13
+*** TIPS chrome在最大化的状态下是没有外框的，但是当不是最大化的时候是有的，这个外框的宽度默认是5px，可以用qq截图很明显的看出来。window.innerWidth是浏览器当前宽度（不包含外框）。
+*** Ramda————函数式编程神器。相比于underscore/lodash，它的api更加的优雅，支持更多的函数式工具函数，而且这些函数是在初代版本就作为基础提供的，比如compose、pipe、curry、fold等，这使得它的组合能力更强，能够轻松生产函数。
+*** pipe与compose的区别，他们都能依次调用一个个函数，区别只是方向问题，pipe是从左到右，compose是从右到左，除此之外，这两个函数没有区别。简而言之，compose就是逆向的pipe。
+*** 柯里化能够实现函数的拆分，以便更好的组合，极大提升函数的可复用性。
+*** Ramda.js的秘密武器是柯里化，通过柯里化的设计提升函数的复用性。
+*** Lazy.js也是一个很有自己想法的js库，其他的函数库像underscore/lodash的函数都是egar evaluation的，只要调用了，就会去计算，这在组合的时候很可能会有很多多余的计算，而lazy则可以根据最终所需要的计算进行优化，节省计算时间，提高效率。可以说，Lazy.js只是在underscore/lodash的基础上做了些优化，大大提升了它们的运算速度。
+*** spread syntax and rest parameters:
+   1. spread syntax:
+	  1. a better apply
+	  2. a more powerful array literal(yes,it's just a literal like object literal).
+	  3. apply for new???
+	  4. copy an array
+	  5. a better way to concatenate arrays
+   2. rest parameters:
+	  the rest parameter syntax allow us to represent an indefinite number of arguments as an array.(when spread syntax is used in function call,the relative arguments is called rest parameters).
+	  rest operator is used to wrap arguments to a array,spread syntax is used to unwrap obj and place it in a new obj,the two things is just opposite.
+*** React:
+	1. use function to wrap html element,so we can use nested function to despribe nested html element.
+	2. when we can render function,Reeact will calculate the difference between previous state and current state and fix the changed element.The diff alogorithm is the key point.
+*** TIPS Wrap state and maintain the state when new date is coming.Many state is not coming from outer,it's been created when we call function.Programing is a state management in many occasion.
+
+                <div class="todo-wraper">{
+                    this.items.map(item => (<TodoItem item={item}/>))
+                }</div>
+** 2017/04/14
+*** react核心思想————
+	1. 把html融进js，使用js来写html，允许我们抽象标签，标签嵌套实际上就是一个函数调用。
+	2. 使用函数来操作模板，使用props作为参数，使用callback作为返回值。
+	3. 使用setState来实现内部状态更新，在更新的同时重新渲染组件。
+	4. if可以使用逻辑运算表达式替代，for语句可以使用map语句来替代，实际上react已经在往函数式编程上面靠了。
+*** svg最大的魅力在于它是基于dom元素，我们可以用css技术来对其中的元素进行控制。
+*** state在哪里，维护state的地方就应该在哪里。state需要放在所有需要使用这个state的父级，这样维护起来才会比较容易。
+*** Thinging in React:
+	1. break the UI into a component hierarchy.
+	2. build a static version in react.
+	3. identify the minimal(but complete) representation of UI state.
+	4. identify where you state should live.
+	5. add inverse data flow.
+	   ————《thinging-in-react》
+** 2017/04/15
+*** redux流程：
+	1. 数据被封装成一个个action，从dispatch开始流动。
+	2. 先流到reducer,reducer会结合当前的state与action进行计算，得到新的state。
+	3. 这个state会继续流到subscribe中进行状态更新。
+	button -->callback dispatch -->action reducer -->state view
+*** combineReducers能够将很多state与他们的reducers集中到一起，实现应用拆分.
+*** redux的middleware是为了增强dispatch而出现的。
+*** redux本身只能处理同步的action，但可以通过中间件来拦截处理其他类型的action，再用回调出发普通的action，从而实现异步处理，在这点上所有redux的异步方案都是类似的。
+	————kpaqin 《Redux异步方案选型》
+** 2017/04/16
+*** 关于react的props与state，首先这两者都是组件的输入，只不过输入的来源是不一样的，props是来自于上层组件的输入，它一般用于表达组件的数据，而state是其他的输入，比如用户输入、服务器请求或者时间变化。使用state来存放props是很有可能出问题的，因为state是在constructor时初始化的，而当组件重绘的时候尽管props发生了改变，但constructor是不会被重新调用的，所以此时props并不会同步到state，组件重绘就会出问题。
+** 2017/04/17
+*** 纯函数实际上是很好调试的，但不是使用打断点的方式调试，因为纯函数去除了状态，导致代码逻辑整体比较简单，所以一般直接在脑子里推演下就可以知道哪里出问题了。
+** 2017/04/18
+*** Object.assign() 只是一级属性复制，比浅拷贝多深拷贝了一层而已。既不是浅拷贝，也不是深拷贝。正是因为这一点，所以，首先它的性能是可以保证的，然后它可以保留对象，防止对象被直接销毁，但要注意对原对象的修改依然会影响到新对象。
+*** vue的指令到底是什么呢？它们会在渲染的dom上应用特殊的响应式行为，使得数据与模板保持一致。
+*** 指令（Directives）是带有 v- 前缀的特殊属性。指令属性的值预期是单一 JavaScript 表达式（除了 v-for，之后再讨论）。指令的职责就是当其表达式的值改变时相应地将某些行为应用到 DOM 上。
+*** vue独有的强大功能有：
+	1. 修饰符（实际上就是函数参数）
+	2. Prop类型验证
+** 2017/04/19
+*** 一个浏览器环境，只能有一个事件循环，但一个事件循环可以有多个任务队列，每个任务队列都有自己的优先级，先执行优先级高的事件队列，几个任务队列有可能并发执行。每个任务都有一个任务源，相同任务源的任务，被放在一个任务队列中，同一任务队列，按照先进先出的顺序执行。队列优先级：
+	process.nextTick > promise.then > setTimeout > setImmediate
+*** Error的类型常见的有七种，EvalError/InternalError/RangeError/ReferenceError/SyntaxError/TypeError/URIError.比较有用的有Error/TypeError/SyntaxError，其他的就没啥了。
+*** js小数转整数的n种方法：
+	1. 3.5.toFixed()
+	2. Math.ceil(3.5) Math.floor(3.5) Math.round(3.5)
+	3. parseInt(3.5)
+	4. (3.5 + '').split('.')[0]
+	5. 移位
+*** 伪类选择器与伪元素选择器并不是一个东西。伪类选择器是给一个元素添加了一个额外的隐形类，用于表现不同状态下元素的样式，比如访问态/悬停态/激活态/焦点态等。伪元素选择器是给一个元素添加了一个隐形的元素，用于给元素增加额外的样式。比如before/after/first-letter/first-line/palceholder/selection。它们之间非常容易混淆，因为写法一样，都是单冒号，但是实际上，按照css3的标准，只有伪类才应该用一个冒号表示，伪元素应该用两个冒号来表示。
+*** TIPS 最简单的构造树的方法也许是使用html了，我们可以轻易的写一个html形成一棵树，然后就直接可以使用dom元素自带的遍历树的方法了，用于树形数据结构的算法练习是非常好的。
+*** 关于深度遍历与广度遍历，先遍历跟节点，然后递归遍历子节点就是深度遍历。而对于广度遍历，它根本不需要使用到递归，只需要使用到一个数组，每次取数组的首元素，并将子节点放到数组后面去遍历就可以了。
+*** IMPORTANT 实际上算法并不应该用c++这种语言来表述，非常晦涩，把原本简单的问题大大复杂化，非常难懂。虽然对于算法来说，性能非常重要，但是如果一开始就把简单的问题搞复杂了，那么当问题复杂之后就没法做了。
+*** IMPORTANT 函数式编程非常便于表述算法，因为它擅长于表述过程而不是状态，而对于算法来说，过程更重要，状态只不过是一种性能优化手段，过早的考虑状态反而容易淹没算法主题，使得以后的优化变得愈发困难。
+*** IMPORTANT 关于树的广度优先算法，实际上这个算法是一种编程模式，使用一个数组来承载这棵树，先将根节点丢到数组里，然后处理数组的第一个节点并将所有子节点丢到数组的最后，一直往后知道数组为空，就处理完了这棵树。
+*** 广度优先算法最大的作用就是它可以处理规模无限大的问题，它是一种不断扩大搜索范围的算法，只要扩大到一定条件，找到了结果，就可以直接返回了，而不像深度优先算法一定要走到底，因此它特别适合于用来处理图相关的问题。
+*** Immutabel实际上就是重新定义了几个数据类型来替代原生js的可变数据类型，使用Map代替Object，使用List代替Array，然后所有的操作就都是immutable的了。
+** 2017/04/20
+*** IMPORTANT 将对象完全immutabel之后有哪些收益呢？
+	1. 能够显著降低mutabel带来的复杂性，不用担心函数调用会修改参数。
+	2. 对象被创建后就不会被修改，履历简单，很容易比较对象是否相等。
+	3. 数据被修改后原始数据还在，容易追踪数据的变化。
+	4. 能够更好的与函数式编程配合。
+*** IMPORTANT 函数式编程有哪些优势呢？
+	1. 代码简单，逻辑清晰，每一句代码都是语义化的，可读性好。
+	2. 状态更少，不用担心参数被修改，大脑负担低，也便于性能优化。
+	3. 便于调试，可以很容易的看到每一步的输入与输出。
+	4. 语言无关，无论什么语言都是通用的。
+	但也有缺陷：
+	1. 需要很多基础函数做支持，会带来学习成本。（其实在平时编码的过程中可以自己有意识的抽出一些接口函数，这样写起代码来会越来越顺手）。
+	2. 虽然很好优化，但是未经优化的版本性能还不如过程式代码。
+*** js的sort函数大于0的会被丢到后面，而不是前面。
+*** 要善于利用函数的返回值，它会使得我们的API结构更加的优雅。
+*** TODO high-order function: getOrCreateGet
+*** TODO 如何把用户的操作当做成一个不确定什么时候返回的异步方法???
+*** 关于箭头函数的this与普通函数的this问题，箭头函数的this是定义时的this，普通函数的this是调用时的this。值得注意的是，对象没有自己的作用域，函数才有。所以，这种方式定义的函数的this会是windows:
+	let x = {fn: () => console.log(this)};
+	x.fn();
+*** 对象与函数的区别，函数有自己的作用域，而对象没有，函数有自己的constructor，这使得函数可以被new，而对象没有。
+*** 由于Immultible使用了共享内存的概念，使得它能够大大节省内存，这一手段大大优化了内存管理，同时使得大量运用复杂相似的对象也不会产生多高的内存开销，极大的提升了js的表现力。
+*** Immultiblejs是不可变的js，它极大优化了js的数据结构与API，使得js变得无比强大。
+*** 用户的操作行为实际上是一棵树，每个动作之后有n种可能，然后每一种可能之后又有n种可能。
+*** 分布图是个很重要的图，它可以反应一个操作大概多久可以完毕，这个信息是非常重要的。
+** 2017/04/21
+*** angular有两大底层系统：
+	1. DI系统。用来管理依赖，相当于requirejs，不过不同于requirejs文件相互依赖的方式，它将依赖集中了起来，避免了相互依赖，从而比较容易测试。我们使用controller来做功能分发，在service、directives、filters、animations里面处理具体的业务逻辑。（DI系统也许是angular最具特色的功能了，其他的前端架构比如vue/react都没有）。
+	2. 指令系统。angular会在html加载完毕后匹配指令并compile与link，实现事件监听与双向绑定，html里所有angular相关的东西都是指令，但是直接使用指令不直观，而且比较复杂，所以才出现了很多包装了指令的东西，比如module。
+*** angularjs实际上并没有它表面上看起来的那么难，它的内核实际上非常简单，但是它却为了分类代码，引入了各种概念，最终使得这一框架看起来非常复杂。
+*** angular的components不同于其他的components，它代表页面的一部分，使用components来组织页面，抽象模块。它的组件实际上更加的类似于模块，混淆了组件与模块的概念。
