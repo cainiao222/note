@@ -159,4 +159,4 @@ walkDom(document,console.log);
 	4. onDestory
 	5. onkeydown
 *** TIPS 根据 HTML 规范——HTML Standard，拥有 id 属性的任何元素，其属性值将作为 window 对象的属性（自然也就是全局变量）。这也算是一个非常边缘的知识点了。
-*** 最后一次测试
+
