@@ -169,3 +169,58 @@ walkDom(document,console.log);
 *** TODO 类除了能够实现先调用，后定义以外，还有一个作用是能消除不断的if/else判断。
 *** TODO if打乱页面逻辑的能力一点也不必循环差，特别是if多的时候。
 *** TODO 控制不要带有过多的数据，那么问题就来了————如何将控制与数据解耦，也就是控制与模型解耦。
+** 2017/07/24
+*** TIPS 其实刷票非常简单，只需要给页面注入一段脚本，不断模拟用户点击某个元素就可以了。最简单的注入手段就是直接打开控制台，直接在里面敲，非常简单。
+*** TODO 如何面向类编程？
+*** TODO text-align:justify?
+*** 维护清晰的依赖关系比消除代码重复更加重要，为了达到这一点，适度的代码重复是必要的。
+*** TODO 尝试模糊搜索库。
+	http://itv.video.iqiyi.com/itv/groupdetail/212923912/?tms=&isFree=0&local=zh_tw&apkVersion=3.1.1.62653&version=5.0&m=1288&src=04075021011010000000&passportId=0&qyid=tv_d41cdcfce8d779780ce0f98f9c618612_1500890810149&locale=zh_tw
+** 2017/07/25
+*** IMPORTANT html请求是什么？实际上就是一个异步函数调用，serverAddr/funcName?arg1=xxx&arg2=xxx2或者是serverAddr/funcName?xxx1/xxx2,前者是key arguments,后者是普通arguments.这就是一个函数调用嘛，后端实现这个函数，前端调用这个函数，这就是html请求的本质。
+*** TIPS 文本超出显示三个点样式：
+	#+BEGIN_SRC css
+		.xxx{
+　　        display:block;
+           overflow:hidden;
+           word-break:keep-all;
+           white-space:nowrap;
+           text-overflow:ellipsis;
+	    }
+	#+END_SRC
+	核心就是text-overflow，大致原理是text-overflow属性仅是注解，当文本溢出时是否显示省略标记。并不具备其它的样式属性定义。我们想要实现溢出时产生省 略号的效果。还必须定义：强制文本在一行内显示(white-space:nowrap)及溢出内容为隐藏(overflow:hidden)。只有这样 才能实现溢出文本显示省略号的效果。至于word-break尚不清楚是干啥的，记住就好了。
+*** TODO 合并模板编译与代码编译，进行代码编译前，先监测模板是否发生了变化。
+*** TIPS 合并永远是简化编程的不二法门，能够用代码做的事情永远不要用人去做。就想编译系统这个事。
+*** TIPS 正则的强大之处不仅仅在于查找，还有替换，比如我想将所有的中文词语都加上${{}}$,只需要用如下正则就好了([\u4e00-\u9fa5]+) \${{$1}}\$，体会到正则的强大了吗。
+** 2017/07/26
+*** 关于文件夹的修改时间是这样的，在文件夹一级子目录下新建（或删除）文件会改变文件夹的修改时间，二级及以上不会影响修改时间，编辑一级子目录下的文件会改变文件的修改时间，但不会改变文件夹的。所以，文件夹修改时间可以用来监控子文件新建与删除，不能监控修改，而且只能监控一级子目录下的。
+*** IMPORTANT gulp-changed真是一个神器，尤其是在源文件与目标文件是一一对应的时候。我们不需要关心没有修改的文件，只需移动下修改了的文件，实现构建效率的大幅提升。
+*** 本周对构建系统做了个大的调整，合并了less、tpl2js、babel、zh_TW、将代码构建到tizen studio,基本实现了一键构建，同时借助于gulp-changed这个插件，实现了增量构建，不移动没有修改的资源，大大提升了构建效率。
+*** TODO gulp之所以可以一直pipe下去是因为它一直都是接受一个vinyl-stream,进行处理，然后返回一个新的vinyl-stream,这样stream被一直不停的transform，直到得到最后的结果。而gulp-if，则是进一步的利用了这种能力，在不同的情况下返回不同的stream，接受之前传入的stream，返回不同的stream继续传播
+*** 多看github上的源码，而不是用法，追溯这牛逼库的源码的依赖一层层的去看，对编程能力非常有好处。
+** 2017/07/27
+*** IMPORTANT 从今天起，我拥有了自己的域名（flynmv.cn）服务器(ECS)，这是个值得纪念的日子。有自己的服务器能干啥呢？能干的事情可多了。
+	1. 开发、测试、上线、前端、后端、服务器、linux系统，统统都能接触到，对流程的理解大有好处。
+	2. 可以预发布资源，通过域名的支持，可以很容易的访问。
+	3. 作为云盘，轻松同步多端的数据。可以将自己的数据放在自己的机器上，而不是各种三方网站。
+	4. 个人建站成为可能，可以生产与发布资源到外部，完全的定制，不需受三方网站的约束。
+	5. 直接修改服务器的资源也不是事，毕竟是自己的，修改了即时就能访问到。
+	6. 为将来彻底切换到linux做准备。
+	7. 随时随地，双系统支持，比如如果你主机是wondows的，你想在linux下试试效果，直接在终端中操作就可以了，这可比使用虚拟机占用资源要小得多。
+*** TIPS 文件夹搜索技巧，webstrom中如果想在某个文件夹下搜索，最好的方法并不是直接打开Ctrl+Shift+F然后选择文件夹进行搜索，而是先在左侧的文件树种选中想要搜索的文件夹，然后Ctrl+Shift+F,这样打开的就直接定位在那个文件夹上的搜索，十分方便。
+*** TIPS 想要登陆远程服务器，putty只是给新手入门用的，玩多了没什么意思，登陆起来巨复杂。更好的方法是直接使用ssh命令登陆，配合域名的支持，我们并不需要可以去记忆ip地址，（如果没有域名，通过修改host也可以），比如登陆我的ecs，使用如下命令就好了：
+#+BEGIN_QUOTE
+	ssh root@flynmv.cn
+#+END_QUOTE
+	前面是用户名，后面是域名，然后输入密码，任何终端都可以轻松的连入到远程服务器，前提是安装了ssh。
+*** TIPS 同样的道理，传输文件到远程服务器，更好的方法并不是使用ftp，也不是使用mstsc、FileZilla这样的图形化工具，而是使用SSH,它专门的复制文件的命名是scp（ssh copy）,形式如下：
+#+BEGIN_QUOTE
+    scp from to
+#+END_QUOTE
+	比如：
+	1. 从本地复制文件到远程：scp /aaa/bbb/ccc root@flynmv.cn:/xxx
+	2. 在本地把远程的文件拿过来：scp root@flynmv.cn:/xxx /aaa/bbb/ccc
+	这样，无需打开任何辅助工具即可轻松的实现文件传输。
+*** TIPS emacs中转换文件编码格式的方法： C-x C-m f utf-8-unix RET，然后保存即可。
+*** IMPORTANT 最好的emacs函数与命令的试验田不是minibuffer，它不支持不是interactive的函数；也不是*scratch*，它运行起来比较费劲，而且不支持去掉括号的简写，不支持外部windows命令，不支持快速执行上一条命令；而是eshell，它拥有了所有的优点，可以执行任意命令（windows的、linux的、interactive的、非interactive的、简写的、非简写的），而且可以快速执行与定位（Enter与UP/DOWN）,非常好用。
+*** TIPS windows下查看端口占用，先netstat -ano | findstr port，找到对应进程的pid之后再tasklist | findstr pid,由于中间这个步骤有很多需要人为判断的成分，这个还真不大好合成一个命令，就这么凑合用吧。
