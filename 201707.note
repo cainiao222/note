@@ -93,7 +93,11 @@ function obj2Url(obj){
 ** 2017/07/12
 *** 工厂模式并不仅仅是用来创建不同种类的对象的模式这么简单，它是一个状态管理的容器。在js中，工厂模式通常的实现是在一个函数中有几个状态，然后返回一个管理这个状态的函数，类似于一个类，但表意与写法上有细微的差别。
 *** TODO 函数调用树生成。首先需要统计代码中用户定义的函数，然后广度优先遍历AST，这样就可以生成调用树了。
-*** TIPS adb调起盒子设置界面命令：adb shell am start -n com.android.settings/.Settings
+*** TIPS adb常用命令：
+	1. 调起盒子设置界面：adb shell am start -n com.android.settings/.Settings
+	2. 截图：
+	    adb shell /system/bin/screencap -p /sdcard/xxx.png
+	    adb pull /sdcard/screenshot.png e:/xxx.png
 *** TIPS 关于循环的层数问题，最好不要超过两级，一旦出现二级循环就要考虑到是否需要把这个内层循环搬到一个新的函数中，这样程序整体可读性会比较好。
 ** 2017/07/13
 *** 文件树与dom树一样，也是树结构，自然也可以使用通用树遍历结构来遍历它。代码如下：
