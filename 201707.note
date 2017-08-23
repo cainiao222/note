@@ -218,6 +218,11 @@ walkDom(document,console.log);
 	ssh root@flynmv.cn
 #+END_QUOTE
 	前面是用户名，后面是域名，然后输入密码，任何终端都可以轻松的连入到远程服务器，前提是安装了ssh。
+*** 除了直接远程登录外，ssh还可以在远程机器上执行命令，比如：
+#+BEGIN_QUOTE
+    ssh root@flynmv.cn rm -rf /root/abc
+#+END_QUOTE
+	就可以直接在远程机器上执行文件删除命令，将文件夹abc给删掉了。
 *** TIPS 同样的道理，传输文件到远程服务器，更好的方法并不是使用ftp，也不是使用mstsc、FileZilla这样的图形化工具，而是使用SSH,它专门的复制文件的命名是scp（ssh copy）,形式如下：
 #+BEGIN_QUOTE
     scp from to

@@ -106,3 +106,84 @@ function printProcessedFile(prefix,time) {
 *** TIPS 在git中，如果你不慎将一个临时文件提交到git仓库中了，不是直接在gitignore中将这个文件加进去就好了，还需要在本地将这个文件删除并提交到远程，git会检查出这个删除操作（即使它被ignore了）并将远程文件删除，这样再次生成这个临时文件git就不会管这个文件了。也就是说gitignore的工作原理不是直接忽略某个文件，而是先检查服务器上是否存在这个文件，不存在时才会忽略这个文件，如果存在，依然会检查这个文件。
 *** TIPS setTimeout与setInterval是很重要的东西，它是js的时间轴，是实现动画的关键。
 *** IMPORTANT 实际上，做动画与做其他的程序是一样的，只不过动画是修改数据，每过一定的时间（一帧）自动渲染，而其他程序是手动渲染。手动渲染一修改数据就要重新渲染，费时费力，纯动画式的自动渲染多数时候是多余的，浪费性能（所以，有些游戏会限制帧率）。如何更有效的渲染呢？答案是按需自动更新，让程序来自动检查数据是否发生了变化，如果发生了变化再渲染，这就是现在主流的思想，正是基于这一思想，才有了数据双向绑定、虚拟dom这些东西。
+** 2017/08/21
+*** data --> tpl --> event,记住这个顺序，非常重要。
+** 2017/08/22
+*** OpenWrt————學習嵌入式Linux的最佳平台,适合于盒子、路由，比如小米路由器、极路由。
+*** 在windows中，我们可以通过which在path中查找某个程序所在的目录，美中不足的是，它不能查找超链接。
+*** linux常见搜索命令：
+	1. which 在path中查找exe,windows中也有）
+	2. whereis 在path查找所有文件，中通过文件数据库查找，一星期一更新,在windows中叫where
+	3. locate 查看文件位置（在文件系统中通过文件数据库查找，每天已更新，可通过updatedb手动更新，已被弃用，需先安装mlocate）
+	4. find 查看文件位置（在文件系统中查找，速度较慢）
+*** linux库相关命令：
+	1. ldconfig 更新库缓存文件，一般新安装了库或添加了新的库路径都要使用这个命令更新库缓存
+	2. ldd 查看某个程序的依赖库（注意程序目录需添加全，比如ldd /usr/local/bin/emacs不能直接敲emacs）
+*** yum group程序组（其实它与直接的yum一样，只不过在前面加了个group）：
+	1. yum group list
+	2. yum group info "group name"
+	3. yum group install "gruop name"
+	4. yum group summary
+*** RESTAPI是什么？实际上就是API的面向对象，它主张以对象为核心，以http的get/put/patch/delete来操作这些对象，这不就是面向对象的做法吗。
+*** 为什么要面向对象？最开始，程序员写程序是面向函数的。这样做有什么问题呢?
+	不具有通用性，函数做的事情太少。
+	比如我们想操作某个资源，我们可能会写出这样的函数：
+	getRes/saveRes/updateRes/delRes
+	更糟糕的是，由于语言层面上没有限制，这些函数可能会散落在各处，非常难以维护，我们需要有一种能够将这些方法组织在一起的工具，这就是面向对象得以兴起的原初动力。
+*** MakeSureDirectoryPathExists是windows编程中常用的一个工具函数，看起来好像很神秘的样子，js中没有这个函数，但实际上，实现这个函数很简单，只要这么来就可以了：
+	#+BEGIN_SRC javascript
+		function ensureDirectoryExistence(filePath) {
+            var dirname = path.dirname(filePath);
+            if (fs.existsSync(dirname)) {
+                return true;
+            }
+            ensureDirectoryExistence(dirname);
+            fs.mkdirSync(dirname);
+        }
+	#+END_SRC
+	原理就是一个递归，每次取path最后的那个目录，判断这个目录是否存在，如果不存在就用它递归，存在就返回，就这么简单。
+** 2017/08/23
+*** 虽然vim在非编辑模式下有各种快捷键，效率很高，但是在编辑模式下没有，需要使用这些快捷键还需要先退出编辑模式，这也就是vim与emacs可以结合的基础。
+*** TIPS windows下：
+	1. 查看进程：
+	#+BEGIN_SRC 
+	tasklist | findstr xxx
+	#+END_SRC
+	比如查看所有的chrome进程：tasklist | findstr chrome
+	2. 批量终止进程：
+	#+BEGIN_SRC 
+	taskkill /F /IM xxx
+	#+END_SRC
+	这招在批量终止进程上非常有用，比如taskkill /F /IM chrome.exe一次就可以把所有chrome.exe的进程给终止掉了,还可以使用通配符，非常有用。
+*** 不要把数据暴露在外面，暴露在外面的只应该是函数，因为数据结构是易变的，但函数一般是不变的。这样拓展起来会比较方便。
+*** js中的new是一个很不好的东西，它会影响思维的连贯性，使得我们需要在对象式与函数式思维之间来回切换，影响我们抽象。
+*** TIPS 实际上，内存是比文件系统更好的数据存储地，文件系统的局限性在于它只能存储串（文本串与二进制串都是串），这就使得我们使用文件系统存储的数据的时候需要先序列化数据，读出数据的时候又要反序列化数据，这一来一回会造成很大的性能开销。但是如果用内存就不存在这个问题了，内存可以直接存储对象，用的时候直接用就可以了，跳过了序列化与反序列化的开销，效率自然更高。
+*** 如何写一个计时函数，用来记录函数被调用的开始时间，结束时间，时间间隔？很简单，这样：
+#+BEGIN_SRC javascript
+function time(fn) {
+    return function (...args) {
+        let start = new Date();
+        console.log('start: ', start);
+        let res = fn(...args);
+        let end = new Date();
+        console.log('end: ',end);
+        let timeBetween = end - start;
+        console.log('between: ', timeBetween);
+        return res;
+    }
+}
+
+let timedFn = time(add);
+console.log(timedFn(10,20,30));
+#+END_SRC
+*** 在emacs中，求值顺序也是非常重要的，有可能出现直接eval-buffer没有问题，但是重启加载buffer就会出问题，因为eval-buffer是将当前buffer重新加载，相当于最后加载，而重启时这个buffer不一定是最后加载的，这种顺序的不一致就可能出现某些函数未定义或是已定义导致的报错问题了。
+*** What is layer?Layer is similar to page. It is a toolset which can be installed and uninstalled to the system. It contains servaral entities、interactions and so on. We can install it to our system when we need and remove it from our system when we don't need. Layer is similar to emacs's mode, which is a connection of config、function、hotkeys and so on.
+*** A hook is similar to the concept of events in other systems. Adding function to a hook is similar to adding event handlers. (note: emacs lisp manual also uses the term “event”, but that is lower level events to emacs, not events from emacs.)  ————Xah Lee《What's Hook?》
+*** find-file-in-project ———— 这就是我一直在寻找的东西，它使得emacs具有了在project中查找文件的能力，而且非常速度飞快(比sublime更快)，支持多关键词搜索，速度飞快，非常好用。可惜不支持fuzzying-match，不过这也不是什么大问题，用几个空格就行了。
+*** TODO 使用一个文件查找工具自己实现文件查找
+*** IMPORTANT spacemacs对emacs的改良中有个很重要的东西————快捷键，它规定了一套面向对象的快捷键，比如：
+	+ SPC b x buffer操作
+	+ SPC p x project操作
+	+ SPC f x 文件操作
+	  细细想来，这实际上就是面向对象式的快捷键啊，对象在前，操作在后，它与class/restapi这些一样一样的，非常让人震惊.haiyouge lizi ,xitong de jiagoutu
+*** TIPS 在emacs中，当你想绑定某个键到函数上却又不知道怎样表示这个键的时候，很简单，C-h k，然后敲入你想绑定的键就可以了，它会显示出你想绑定的键的名称，非常方便。
