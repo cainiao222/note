@@ -187,3 +187,83 @@ console.log(timedFn(10,20,30));
 	+ SPC f x 文件操作
 	  细细想来，这实际上就是面向对象式的快捷键啊，对象在前，操作在后，它与class/restapi这些一样一样的，非常让人震惊.haiyouge lizi ,xitong de jiagoutu
 *** TIPS 在emacs中，当你想绑定某个键到函数上却又不知道怎样表示这个键的时候，很简单，C-h k，然后敲入你想绑定的键就可以了，它会显示出你想绑定的键的名称，非常方便。
+** 2017/08/24
+*** IMPORTANT emacs的帮助系统是非常有用的东西，比如:
+	1. C-h k 你想知道某个键当前是否绑定了命令以及绑定到了哪个命令，好给这个键绑定新的，就可以使用它。
+	2. C-h m 查看当前打开了哪些mode，或者当前你在某个mode下，但是不不知道这个mode应该如何操作（不知道有哪些命令可供调用、记不住快捷键），用这个命令就好了。
+	3. C-h v 查看是否有某个变量，比如是否有某个mode/keymap/hook以及当前的值是什么，用这个命令。
+	4. C-h f 查看是否有某个function，定义新函数的时候悠着点，别把旧函数给覆盖了。
+*** TIPS spacemacs并不是它说宣称的仅仅是一个emacs上的vi拓展，它是一套开箱即用的emacs环境，配置好了各种东西，比如模态编辑支持（evil）、project支持（projectile）、文件查找/命令查找支持（helm）、快捷键查找支持（which-key）、各种编程语言编辑支持等。美中不足的是启动速度，尽管它宣称速度很快，但实际也就一般，因为东西实在太多。
+*** 下面的这一段代码对理解emacs的宏还有autoload非常有好处，摘抄自Emacs Wiki《Tab Bar Mode》:
+#+BEGIN_SRC elisp
+(dolist (func '(tabbar-mode tabbar-forward-tab tabbar-forward-group tabbar-backward-tab tabbar-backward-group))
+      (autoload func "tabbar" "Tabs at the top of buffers and easy control-tab navigation"))
+    
+    (defmacro defun-prefix-alt (name on-no-prefix on-prefix &optional do-always)
+      `(defun ,name (arg)
+         (interactive "P")
+         ,do-always
+         (if (equal nil arg)
+             ,on-no-prefix
+           ,on-prefix)))
+    
+    (defun-prefix-alt shk-tabbar-next (tabbar-forward-tab) (tabbar-forward-group) (tabbar-mode 1))
+    (defun-prefix-alt shk-tabbar-prev (tabbar-backward-tab) (tabbar-backward-group) (tabbar-mode 1))
+    
+    (global-set-key [(control tab)] 'shk-tabbar-next)
+    (global-set-key [(control shift tab)] 'shk-tabbar-prev)
+#+END_SRC
+	
+*** elisp中的dolist是对while的一个简化，它使得我们不用显示的使用cdr来移动游标了。它是一个宏，其用法如下：
+#+BEGIN_SRC elisp
+(let (value) (dolist (func '(+ - * /) value) (setq value (cons (funcall func 20 10) value))))  ;;(2 200 10 30)
+#+END_SRC
+	注意第三个参数value，它是dolist的返回值.
+*** 在emacs中，命令是可以指定参数的，使用C-u给命令指定参数，比如C-u 50 C-n下移50行，这样。不过它不能指定多个参数，如果你想这么做的话，使用list就可以了。
+*** TIPS 数据在上，代码在下，这样比较好维护。
+*** IMPORTANT 纯函数式编程会导致层次过多，划分的粒度太细，而面向对象可以使得层次被压扁，大大简化模型。
+*** gulp实现平行转换非常简单，无需多说，但一分多多合一就要费点事了，但也不复杂：
+	1. 一分多，实际上非常简单，使用gulp-util的File对象，多new几个，然后push到流中就可以了。比如我想把一个文件拆分成两个，非常简单，这么来就可以了。
+#+BEGIN_SRC javascript
+function split(targetArr) {
+    return through2.obj(function (file,enc,cb) {
+        let sourceContent = String(file.contents);
+        for(let tag of targetArr){
+            let targetContent = commentTag(sourceContent,tag.targetLine);
+            let file = new gutil.File({
+                base: path.join(__dirname, '.'),
+                cwd: __dirname,
+                path: path.join(__dirname, tag.resultFile),
+                contents: new Buffer(targetContent),
+            });
+            this.push(file);
+        }
+        cb();
+    })
+}
+#+END_SRC
+	注意for循环中的new gutil.File，然后push。
+	2. 多合一，多合一的关键是知道流什么时候结束，我们只需要在流进行的过程中拼接一个字符串，结束的时候创建一个文件容纳这个字符串就好了，实际上through2的api就直接帮我们做好了，类似这样through2.obj(options,transfomFunction,flushFunction),flushFunction就是流的结束信号。类似这样：
+#+BEGIN_SRC javascript
+function concat() {
+    let contents = "";
+
+    return through2.obj(function (file,enc,cb) {
+        contents += String(file.contents);
+        cb();
+    },function (cb) {
+        let _file = new gutil.File({
+            base: path.join(__dirname, '.'),
+            cwd: __dirname,
+            path: path.join(__dirname, 'bundle.js'),
+            contents: Buffer(contents),
+        });
+
+        this.push(_file);
+        cb();
+    })
+}
+#+END_SRC
+	注意进行中与结束时都需要调用cb使流继续往后走。
+	3. 有了这块知识储备，我们可以自己实现useref插件，它无非是查找html中的标记，将标记间的内容一分多，将标记内的内容多合一的一个插件。
+*** 实际上事件也可以看成是一个函数，一个事件发生了，就是一个函数被调用了，然后如果我们不注册这个事件，这个函数什么也不会做，如果我们注册了子函数，它们会被一个个调用，注意别忽略了事件的返回值，我们可以利用这个返回值控制事件的续处理与流动。
