@@ -1,0 +1,37 @@
+* 2017/10
+** 2017/10/09
+*** 调研性质的东西时间最难估，因为永远不知道前方还有什么坑等着你。
+*** What is complicated in unit tests is not the tests itself — it is the art of separating as much code as possible so that it is unit-testable. And code that is unit-testable is code that has little dependencies on other modules, and does no I/O.    ————Gil Tayar《Testing Your Frontend Code: Part II (Unit Testing)》
+*** 前端测试的坑：
+	* 移动端测试
+	* mock
+	* nightwatch custom-command
+*** 关于发布订阅模式有三个核心的api————publish（发布，也叫trigger/dispatchEvent）、subscribe（订阅，也叫on/addEventLinstener）、unsubscribe（取消订阅，也叫unbind/removeEventLinsener）。注意没有取消发布，因为发布是同步的，瞬时的，当然无法取消，而订阅是异步的，它会一直等待发布的消息，当然可以取消了。
+*** 关于mock，js最强的mock工具叫sinon，没有之一。
+** 2017/10/10
+*** 关于const，const只是表示引用不可修改，并不表示引用的对象不可修改，比如：
+#+BEGIN_SRC javascript
+const obj = {
+	aaa: 111,
+	bbb: 'aaa',
+}
+
+obj.aaa = 222; // 正确，可以修改const指向对象的数据
+// obj = {} // 错误，不能修改常量引用
+#+END_SRC
+*** IMPORTANT sinon的核心在于监听与替换函数实现。spy是监听者，它可以监听到函数被调用的情况，比如函数参数、调用次数、this等，被监听的函数依然会被调用，只是会将调用信息记录下来以便做断言；stub不仅可以监听，还可以替换实现，它可以强制让函数返回某个值而不是原值，被替换的函数不会再被调用；mock是带断言的spy，它的作用也是监听，只不过它集成了断言，能够设置指定情况下的断言，仅仅用在特殊场合。
+*** IMPORTANT 编程的过程中，保持单一入口或是几个入口是非常重要的，只有这样才会有最强的控制力。比如:
+	1. react的render
+	2. redux的store dispatch action to reducers
+	3. vuex的store dispatch action, action getter state and commit mutation,mutation update state.
+	4. koa的use middleware
+	5. ajax的封装库等等
+	这些都是尽量减少了入口实现了更好的控制力。
+*** 什么是plugin？plugin实际上是一个定义好格式的配置对象，写好框架代码，读取配置对象中指定的属性与方法，就能将新功能集成到原系统中，用户对框架是完全黑盒的，这样才能保证代码安全，不出bug。
+*** TODO 统一的Mock机制，比如一个开关，打开后使用mock的数据，关闭后使用接口的数据。当APP启动，所有接口请求前，如果mock处于打开状态，创建一个沙盒，使用mock的数据，后期可以自由控制mock开关，选择使用的数据。好处：
+	1. 统一的mock机制，解除后端依赖，无需后端接口写好才开始开发。
+	2. 代码规范，所有mock的代码一目了然，mock的代码与正式代码隔离。
+*** 测试Tips：
+	1. 重要的问题，复杂的逻辑，最可能出现问题的地方，只有写代码的人自己才清楚。
+	2. 每次出现问题，把它写进测试用例，这样就能很大程度上减小再次出现的几率。
+*** VIP、单点、用券 * 用户是否登陆套餐
