@@ -35,3 +35,75 @@ obj.aaa = 222; // 正确，可以修改const指向对象的数据
 	1. 重要的问题，复杂的逻辑，最可能出现问题的地方，只有写代码的人自己才清楚。
 	2. 每次出现问题，把它写进测试用例，这样就能很大程度上减小再次出现的几率。
 *** VIP、单点、用券 * 用户是否登陆套餐
+** 2017/10/11
+*** 默认情况下，使用sinon的stub的callsFake是会替换掉原有函数的，原函数不会被调用，这时候如果你还想调用原有函数，只需要使用一个闭包将原函数存起来然后在fake函数中重新调用一下就好了，如下：
+#+BEGIN_SRC javascript
+// stub
+const originFunc = def.fn1;
+sinon.stub(def,'fn1').callsFake(arg => 'ooo' + originFunc(arg));
+#+END_SRC
+	这一技巧同样适用于不想全函数替换，仅仅是想改变下调用参数的情况，如下：
+#+BEGIN_SRC javascript
+// stub
+const originFunc = def.fn1;
+sinon.stub(def,'fn1').callsFake(arg => originFunc(arg + '222'));
+#+END_SRC
+	总之，有了替换就有了一切，修改原始函数可以通过闭包来实现。
+*** TODO sinon change this, change arguments
+*** IMPORTANT 一个函数中调用了另一个函数，如果我们想要修改被调用的这个函数的实现，使用stub是一个好的选择。但并不是任何时候都是，我们完全可以不用sinon，直接使用修改函数实现也能达到目的，比如：
+#+BEGIN_SRC javascript
+// stub not use sinon
+const originFunc = def.fn1;
+def.fn1 = function(arg){
+  return 'asdf'
+};
+console.log(abc());
+def.fn1 = originFunc;
+#+END_SRC
+	这取决于你对js的掌握程度。这实际上也是sinon的stub的实现原理：
+	1. 当我们stub一个函数时，sinon会把这个函数存起来，然后当我们调用stub对象的各种api的时候，sinon会帮我们去生成一个新的函数用来替换被stub函数的实现，然后当我们模拟完毕，调用restore的时候就重新将原函数还原为stub之前的，这样就实现了函数替换与恢复。
+*** DONE 原生页面 vs h5页面：
+	1. 原生页面具有性能好、可以调用各种底层传感器的优势，同时也有本地打包、适配困难的劣势。适合于一些比较复杂、对性能要求高的场景。
+	2. h5页面具有热更新容易、适配简单的优势，同时也有性能差、无法调用底层传感器的劣势。适合于一些比较简单的页面、活动页、需要快速更新的场景。
+	3. 两者优缺点正好是互补的，要根据实际情况选择合适的方式。
+*** TIPS 在自动化测试中，我们经常会碰到由于API自己会输出信息干扰到了结果输出，导致生成的结果很难读的情况，这一问题实际上很好解决，在before hook中将console.log hook成空，然后在after hook中恢复就可以了。
+*** IMPORTANT sinon的API设计中为什么要将obj与fn拆分开来而不是将他们写在一起呢？比如sinon.spy(obj,fn)而不是sinon.spy(obj.fn)呢？
+	因为如果合并在一起的话是进行传递的话是形成了一个新的引用，然后改变了新引用的值，当函数返回时这个改变就恢复了，而拆开的话改变的是所引用对象的值。简而言之，前者改变的是引用，而后者才是所引用的值。
+*** 何等的幸运，赶上了最好的时代，人的能力无限大。
+*** IMPORTANT 我常常以为emacs具有极强的拓展性，便于定制什么的。但实际上网页本身也具有很强的拓展性，通过使用tempermonkey，我们能够对网页添加钩子，注入我们的自定义脚本。使用前端最熟悉的html+javascript+css对页面进行功能拓展，实现比如改变页面内容、页面样式、小窗口播放、去广告等各种功能。唯一不足的是我们只能操作网页，无法站在更高的层级，比如空白页面、浏览器等这些层面实现功能定制。
+** 2017/10/12
+*** TIPS 所有页面，基本都是差不多的逻辑：
+	AndroidParams --> otherParams --> pageData --> renderPage --> bindEvents --> focusLogic --> goAndBack
+*** TODO 关于Android与js间的相互通信，实际上很简单，只需要通过windows.Android这个公共对象就可以了。java端在这个对象上写入方法提供给js，然后js就可以调用了，反之亦然，这应该是最简单的方式了。
+*** IMPORTANT focus逻辑如何写，如何与vue无缝结合？这么来写，将focus给单拎出来，我们只需要在需要focus的元素上加上一个focus-id,然后所有有关focus的问题围绕这个id来进行，单独放在某个地方。这样一方面是非常灵活，同时也不损失任何功能性，还可以使用缓存统一提高性能，因为focus逻辑本来就不跟其他东西相关，我们没有任何实现不了的东西，实在是非常完美。我们也可以在它实现方案上加上scope的概念，实现区域逻辑。
+*** TODO browser-sync
+*** getAndroidParams始终是一个变数，它使得我很难下断言。我必须搞清楚它的来源，对它坐下模拟用例才好写。是通过cookie来取的coupon，而cookie是在androidParams中的。当getAndroidParams时，如果不在安卓环境下，getParams必然会报错，这样会跳到函数的catch分支中去，此时返回用来测试的AndroidParams.
+*** 写测试实际上非常类似于自问自答，自己设置问题，然后自己解答。
+*** redux/vuex只不过是一套实现对数据增删查改的API而已，使用它们来进行数据管理格式比较统一，读起来比较简单，容易维护。并没有其他什么了不起的东西。
+*** TIPS webtv-vue的webpack打包做了哪些事情呢？它只不过是将views下的二级目录下的main.js打包到了dist/static下对应的js与css，同时在dist目录下生成了对应的html而已。最后在dist下开了一个服务器，这样就可以在浏览器中打开对应页面了。
+*** TIPS vuex中：
+	1. dispatch触发set的唯一入口。为什么不直接set呢？因为直接set各自调用自己的set，会导致结果无法追踪。
+	2. getters是state的唯一出口。我们当然可以直接从state中取数据。但这会导致关联数据的计算无处安放地方。比如某个状态在state中存的是1/2/3，但外部需要使用的是状态一/状态二/状态三这样的中文。我们需要对state进行下处理了然后暴露给外部，这时我们使用getters。还比如state中存了很多数据，但是我们需要提取出一个数据块给外部，这时也可以用getters。
+	3. commit是mutation的唯一入口。它将数据提交到store存储。然后我们可以在vue中使用computed或是props取回来。
+	4. TODO store往往是通过好几次mutation到正确状态的，如何模拟？
+	这实际上是一个非常好用的编程技巧，将一堆函数使用同一个入口，是的这些函数的调用变得可追踪，这才是redux/vuex的核心思想。
+*** IMPORTANT 写测试用例就是一个逐步去除依赖，一个个区块测试，然后把这些区块合并在一起的过程。最底层是工具函数，上层是MVC的模块（实际上就是数据、UI以及把这两者整合起来的部分），再上层是集成。写测试用例写多了对深入了解系统是非常有帮助的。
+*** 将vue-cli-test使用vuex重构。
+*** 测试用例之难难在哪里？
+	1. 没有办法调试————不要使用PhatomJS,也不要开什么single-run,使用chrome，然后在chrome中调试,当修改源码的时候自动跑测试，美中不足的是需要手动刷新页面。
+	2. 报告经常会混入一堆乱七八糟的输出————使用sinon mock掉console.log
+** 2017/10/13
+*** data props computed————vue组件数据的三大入口。
+*** action是mutation的封装，它给予了mutation异步的能力。我们可以通过commit一个mutation或者dispatch一个action来修改store的数据，前者可以通过哦mapMutations来简化，后者可以通过mapActions来简化。修改后我们需要从store中取回数据，这时我们也有两种方法，一是使用state，获取原始数据，有个简化方法mapState。还有一种就是getters，获取衍生数据，也有一种简化方法mapGetters。这样两个入口、两个出口，是的vuex的API相当简单清晰。
+*** 有时候，我们想要获取变量名，但变量名又获取不到，这时可以利用一个等价关系：
+	abc.def等价于abc['def']
+	注意：这两种形式并不完全等价，后者还可以包含特殊字符。
+*** vue中，即使使用了单文件组件，依然需要在外层使用components来引入组件，然后用template字段触发渲染，然后在字段值中将data中的数据作为props传递过去，否则页面上什么也不会有的。
+** 2017/10/16
+*** 关于focus逻辑有两种实现方法，一种是提供数据与方法，然后在模块外调用提供的方法实现focus，一种是只提供数据，然后全部在模块内实现focus方法。第一种方法实现起来比较简单，但写出来的代码不大好看。第二种实现起来会复杂点，特别是数据格式的设计，但要是实现了可以最简单的实现focus逻辑。
+*** 如果想在promise的异步调用链中如果想插入新的异步调用，有两种实现方式。一种是加个then，然后加上异步处理逻辑，另一种是在then中return一个promise，这样也可以把异步调用插入的现有的异步链中，我们甚至可以用promise把几个异步调用合成一个然后返回实现链合并。
+*** parent/data/props这就是一个组件的三要素了，不管是vue还是react都遵循这个原则。
+*** 将component与store完全分离，以便于分离测试component与store。一旦组件中出现了vuex的东西(最常见的是mapState/mapMutation/mapActions/mapGetters）,单元测试就很不好写。应该只将关键的数据流写进vuex，而不是将所有的数据统统写进vuex。尽量将数据以props的方式传入，而不从vuex。
+*** TODO 为什么不能在模板中写表达式？
+*** 关于async/await，await必须写在async里面，但是调用async函数的时候是不需要在外边再加一个async的。也就是说，当前仅当函数中出现了await时才需要加async，初次之外，即使调用了async的函数也是不需要加await的。这是我以前一直记错了的地方，经验害死人啊。
+*** 在函数前加async并不代表将这个函数变成异步函数了，在你调用await之前它依然是同步函数，跟不加async时没有任何区别。但一旦碰到await，它会将当前context给保存起来转而去执行其他同步函数，也就是说，此时才变成异步的了。
