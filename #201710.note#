@@ -167,4 +167,4 @@ def.fn1 = originFunc;
 *** 异步事件必须要有个通知机制来告诉上层事件完成了，promise就是这种机制，但是promise需要程序编写者的支持，否则你是不可能知道一个异步事件结束的。
 ** 2017/10/21
 *** store dispatch action、action commit mutation、mutation change state.
-*** 使用vue/vuex要注意，多数时候UI产生的数据还需要经过一定的处理再传递到vuex，这个时候直接把这个数据封装逻辑写在UI上是不合适的，更好的方式是UI调用自己的method，然后在method里面封装数据，最后在调用vuex的method将数据提交到vuex.
+*** 使用vue/vuex要注意，多数时候UI产生的数据还需要经过一定的处理再传递到vuex，这个时候直接把这个数据封装逻辑写在UI上是不合适的，更好的方式是UI调用自己的method，然后在method里面封装数据，最后在调用vuex的method将数据提交到vuex。除了在自己的method里面封装数据外，还有个封装数据的地方，通过vuex的action，
