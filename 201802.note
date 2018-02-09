@@ -1,0 +1,34 @@
+* 2018/02
+** 2018/02/07
+*** IMPORTANT 早期版本chrome bug：
+#+BEGIN_SRC javascript
+	var logx = console.log; // fail
+	// var logx = console.log.bind(window);    // fail
+	// var logx = console.log.bind(null);      // fail
+	// var logx = console.log.bind(console);   // ok
+	
+	alert(1);
+	logx('aaa');
+	alert(2);
+#+END_SRC
+	这个bug出现的原因可能是早期版本的console.log函数使用了this，当我们使用console.log时this值是console，这时没有问题，但一旦我们将这个函数赋值给其他对象并调用，this就变了，此时再调用这个函数就有可能出问题。血淋淋的教训。底层的实现可能是这样：
+#+BEGIN_SRC javascript
+	var obj = {
+	    aaa: {
+	        sss: '123'
+	    },
+	    bbb: function (arg) {
+	        var b = this.aaa.sss + arg; // error
+	        // var b = obj.aaa.sss + arg;  // ok
+	        return b;
+	    }
+	};
+	
+	alert(1);
+	var fnbbb = obj.bbb;
+	var ttt = fnbbb('555');
+	alert(2);
+#+END_SRC
+** 2018/02/09
+*** TIPS psd多图层合并导出技巧，先使用shift键选中所有需要一起导出的元素，然后在右侧图层列表上任一选中图层处右键，选择"从图层建立组"，建立组文件夹，然后在组文件夹上右键，选择"快速导出为PNG"，就可以了。
+*** 通用频道 --> 爱奇艺电视页面 --> 联通冰淇淋页面

@@ -1,0 +1,104 @@
+* 2018/01
+** 2018/01/02
+*** TIPS 轮询实际上跟用户点击一样，也是一个事件，也需要抛给上层去处理。
+*** TIPS 尽量不要使用data/params/base/val/res等这些作为变量名，因为这些变量名无法让你一眼就知道它是用来干啥的，你需要阅读代码才能知道，这样维护起来会比较费劲。
+*** TODO mixin里面最好不要有生命周期函数，应该把这个控制权交给上层去做。
+*** TODO VUE中，props一旦更新，模板（template）中使用到的数据会立刻更新，相当于模板中使用的数据是自动watch的，也可以称之为直接依赖。如果是间接依赖，比如data中的某个数据在props改变的时候需要动态更新，这种更新并不是自动的，需要用户手写watch来进行。有时候还会出现这种情况，三层组件，中间一个prop对prop重命名了下，然后传递给第三层，第三层直接依赖，这种情况下也需要手动watch。
+*** TIPS 函数拆分的过细有个弊端就是容易使得函数调用呈现网状结构，互相依赖，牵一发而动全身，非常不好维护，在开发的时候要注意。
+** 2018/01/03
+*** TIPS adb截图：
+	adb shell screencap -p /sdcard/screen.png && adb pull /sdcard/screen.png && adb shell rm /sdcard/screen.png
+	截取视频：
+	adb shell screenrecord --time-limit 60 --size 1920x1080 --bit-rate 6000000 --verbose /sdcard/demo.mp4 && adb pull /sdcard/demo.mp4 && adb shell rm /sdcard/demo.mp4
+*** TODO line-height。css中，line-height是容器。文字占据多少空间是有line-height决定的，比如两个div的文字，字体大小是50px，但是如果line-height只有30的话，最终的高度是60px.
+*** 自带的事件系统、通过mixin自己实现的事件系统。
+** 2018/01/04
+*** TODO 事实上，一个带有多个接口的页面，等所有接口准备好之后再显示页面有时是不够的，考虑页面的每个部分，哪个接口准备好了之后显示哪个部分，也许是更合适的。
+*** 并不是所有的await都需要try...catch...，底层函数加try...catch...反而会吞掉错误，不利于后续处理，但上层函数是肯定需要try...catch...的,因为只要是接口，就需要考虑错误的情况。
+*** iconfont字体颜色渐变设置：
+	background: -webkit-linear-gradient(0deg, #d1a263, #ebd2b0);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+*** return一个promise的函数无论怎么嵌套调用，还是一个promise,只有在任意一个层级await的时候这个promise才会被执行。所以，await类似于一个执行器，有了await，promise才执行。
+** 2018/01/05
+*** TODO 关于同优先级下css的压盖，与class的先后顺序无关，只有css规则生效的先后顺序有关。
+*** TIPS 关于try...catch...了是否使用throw是这样的：如果你觉得上层还需要继续对这个错误进行处理，就应该加上throw，否则就不用加。
+*** adb shell
+setprop test-sourceid true   （显示为测试数据）
+setprop test-sourceid false   （显示为正式数据）
+getprop test-sourceid          （查看设置的值）
+** 2018/01/11
+*** 关于文字与图标底对齐的方案：
+	1. 对文字，设置font-size与line-height相等，使文字居底。
+	2. 对图标，设置display:inline-block；vertical-align:sub使图标居底。
+** 2018/01/12
+*** 轮询流程：
+	+ 修改pageType，页面的各个部分根据传入的pageType刷新UI。
+	+ 对于二维码， --> 
+*** TIPS 以Promise作为函数参数的可行性分析：
+	这种方案不可行，因为一个promise只能await一次，下次继续await是无效的。但是以返回promise的函数作为参数是可行的，这样我们可以随时await整个函数调用，使用这一技巧容易碰到参数传递问题，也好解决，使用一个闭包封一下将参数传进来就可以了。
+*** 虽然promise可以await，但是一个promise只能await一次，并不能多次await。类似于生产者与消费者，一个promise（生产者）只能被消费（await）一次，多次消费会直接返回，并不会继续去重复调用promise。
+*** IMPORTANT 将多参函数变成无参函数实际上非常简单，只需要再加个无参的函数封装就可以了，函数所需要的参数通过闭包传入无参函数中，这样可以将任意函数变得一样。这是个非常重要的技巧，我们可以使用这一技巧将任意函数封装成无参函数，然后将这个函数传递到高阶函数中进行调用，完成传参与函数调用。
+** 2018/01/15
+*** TODO 人肉自动机，人肉电脑。
+** 2018/01/16
+*** TIPS Android浏览器，字体字号为奇数的两倍时（比如 10px、14px、18px、22px、26px），会出现严重偏移现象。
+*** 将文件串成流，分步骤处理。
+*** app一般需要做以下这些事情：
+	+ 接口数据请求
+	+ domain data到ui data的转化
+	+ ui交互
+	拆分成app与core之后：
+*** app负责与外部打交道，包括请求后端接口、
+** 2018/01/17
+*** TIPS throw是个好东西，相比于return，它的优势在于能够中断所有（包括上层）代码执行，而不是像return一样只中断本层函数的代码执行，这样就避免了由于外层继续执行而导致的bug。
+** 2018/01/18
+*** TIPS 一个优秀的init中应该只有做什么的代码（声明式），而不应该充斥着很多怎么做的代码（命令式）。
+*** 函数过长肯定是代码中有太多的命令式的代码，做了好几件事，将这这几件事拆分，改成声明式的，这样行数就短下来了。
+*** TODO 在一个前端页面中，页面初始化时接口请求是一块比较复杂的地方，这块是可以单独出一个文件（比如app）来做，这一步骤完成后下一步是接口数据到ui数据的转化，这块也是可以单独一个文件出来做的，how to?
+*** IMPORTANT 接口数据转化这一步骤实际上就是一个computed，而且最适合用computed来解决。首先computed本身就是一个个函数，便于隔离外部环境，控制代码长度；其次，当props更新，我们再取computed中的属性时，props直接就是新的值，不需要像函数一样再次计算。而且，如果props没有改变，我们直接取缓存props值，这样对效率也大有好处。总之，computed是更好的convert函数，这就是vue computed的本质。
+** 2018/01/19
+*** vue与vuex表面上看好像是两个东西，但实际上它们的概念是一一对应的：
+	+ data --> store
+	+ computed --> get
+	+ methods --> mutation/action
+** 2018/01/23
+*** TIPS 关于关键函数的log，写在函数里面比写在函数外面好。因为这样能：
+	1. 避免容易漏写问题
+	2. 更加的规范
+*** logScreen  -- 将console.log打印到页面上：
+#+BEGIN_SRC javascript
+function log2Page() {
+  console.log = function (text) {
+    var $elem = document.getElementById('logItem');
+    if(!$elem) {
+      $elem = document.createElement('div');
+      $elem.setAttribute('id', 'logItem');
+      document.body.appendChild($elem);
+    }
+    var innerText = $elem.innerText;
+    innerText += text + '\n';
+    $elem.innerText = innerText;
+  };
+}
+#+END_SRC
+这在console.log不方便查看是非常有用。
+** 2018/01/24
+*** indexedDB实际上并没有很多东西，就这些：
+	+ db IDBEnvironment、IDBFactory、IDBOpenRequest、IDBDatebase
+	+ executor IDBTransaction、IDBObjectStore 、IDBIndex
+	+ iterator IDBCursor
+	+ filter IDBKeyRange
+	+ result IDBRequest
+*** insert/del/query/put
+** 2018/01/25
+*** TODO 关于元素遍历，为什么迭代器模式优于循环被大量的高级框架与库使用呢？迭代器实际上与轮询差不多，都是一直调用某个方法获取元素直到得到结果元素（空或符合结果元素的条件end()）。迭代器相当于把轮询的控制权交给了开发者，开发者可以控制在哪些条件继续轮询。
+*** 关于双显示器的使用，实际上可以规范下，左显示器用来工作，右显示器用来展示结果或资料，比如页面、文档等。始终按照这个原则，干活的时候能够有一种习惯，对效率有好处。
+*** 关于indexedDB的keyPath要牢记，keyPath是用来指定数据项中key的位置的，必须要有，你要么通过keyPath属性直接指定，要么通过{ autoIncrement： true }间接指定。
+*** TODO ||与&&运算符，&&表示为真继续往后计算，||表示为假继续往后计算。
+** 2018/01/26
+*** TIPS 两种数据透传方式，一种是直接到登陆页然后跳转；另一种是先到目标页，再判断是否已登录，未登录先跳到登陆页然后跳回目标页。不论是哪种方式，透传的数据都必然是在第一个页面上，此时，要注意数据保存，以便于到其他页面时继续取用。
+** 2018/01/30
+*** TODO 前端代码服务器与后端接口服务器实际上是一回事，我们可以把前端代码服务器看成是一个已经做好的后端服务（http服务）。有了这个统一的视角之后，我们可以发现一个有趣的现象，前端也是需要部署后端服务的，这个服务就是前端代码服务，部署服务不止是后端的工作，前端也必须会。
+** 2018/02/01
+*** TODO 关于nginx，nginx是一个中间服务器，是一个服务的大杂烩，所有请求与响应都会经过这里。通过它，我们可以做域名管理，接口转发，负载均衡等。
