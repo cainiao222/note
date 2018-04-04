@@ -23,3 +23,19 @@
 	+ http1.1: Cache-Control、Last-Modifierd、Etag、Last-Modified
 ** 2018/03/16
 *** emacs的alias可以实现路径重写，完成从请求路径到机器物理路径的映射。
+** 2018/03/19
+*** TODO 使用函子Functor来抽象过程，将串行代码并行化。
+*** TIPS 在git中如果不小心发生了错误的提交（commit）或者是错误的合并（merge），只要没有推送到远程，恢复起来有个简单的方法————删除这个错误的本地分支然后重新从远程拉，类似于git branch -D branch_xxx; git checkout branch_xxx这样。错误的改动就能瞬间恢复了，不用像网上介绍的那样费劲的去找commit_id。
+*** TIPS webstorm直接是可以进行分支比较的，并不需要借助于gitlab的merge request。直接在项目文件夹上右键git --> compare with branch...就可以了，非常简单。
+*** TIPS git中，如果做了错误的提交然后push到了服务器，可以这么来恢复，首先get reset --hard HEAD~1,这样本地改动就会退了一次提交，然后git push -f，（注意，由于此时本地分支已经落后于远程分支，直接push会失败，这时需要加上-f参数）。
+** 2018/03/26
+*** TIPS 关于小米路由器修改host，修改很简单，直接改/etc/hosts文件就可以了，但是默认情况下修改不会立即生效，只需一条命令就可以了，/etc/init.d/dnsmasq restart。
+** 2018/03/27
+*** IMPORTANT ssh确实是一个神器，而且非常简单。它实际上并不区分用户，在任何场合使用任何工具只要生成了一对ssh的key并将公钥放在服务器对应文件夹的authorized_keys文件中，再在客户端home文件夹下放上.ssh（包含公钥与私钥)，就可以在客户端直接使用ssh及其他相关的命令进行文件传输、命令执行等一系列任务了。
+*** ssh本身就支持在本地执行远程机器上的命令并把结果返回，形式如下：
+	ssh user@host command
+	ssh root@miwifi "cat /proc/cpuinfo"
+** 2018/03/29
+*** 关于代理与反向代理，首先，它们都只是一个服务器，有自己固定的地址，只能处理发送到自己上的请求。
+** 2018/03/30
+*** TIPS scp命名的小技巧，它是支持通配符的，如果你想把某个文件夹下的所有文件复制到远程机器上，可以这么写：scp folder/* username@ip:/target/folder/，这样本地文件夹下的所有文件就被复制到了远程。还有一个是我们可以直接在本地把远程机器上的文件复制过来，方法是scp username@ip:/target/folder folder/，这样就可以了。

@@ -1,0 +1,4 @@
+* 2018/04
+** 2018/04/04
+*** TODO 将UI与控制模块进行分离，通过setListener将两者绑定，完成控制反转，当控制模块收到消息时反向调用UI传入的控制函数，将控制权反向交给UI，完成UI状态更新。
+*** 播放：onPlayerCreate --> onAlbumReady --> onReady --> onPlay
