@@ -2,3 +2,66 @@
 ** 2018/04/04
 *** TODO 将UI与控制模块进行分离，通过setListener将两者绑定，完成控制反转，当控制模块收到消息时反向调用UI传入的控制函数，将控制权反向交给UI，完成UI状态更新。
 *** 播放：onPlayerCreate --> onAlbumReady --> onReady --> onPlay
+** 2018/04/09
+*** playerui.js 顶层UI控制js，进行全套事件处理及UI更新
+	--> GalaPlayer.js 中控js，播放器事件+附加事件，部分状态维护
+	--> coreplayer.js 播放器js，专注于处理播放器事件
+	--> avplayerapis.js 底层api封装
+	通过在playerui与coreplayer之间架设一个抽象层GalaPlayer，使得我们可以在原有播放器事件的基础上加上我们自己的事件，从而实现对播放更加精准的控制。
+** 2018/04/11
+*** 关于line-height行高是有很大的坑的，如果有几个inline-block的几个元素并排，设置某个元素的line-height会使得其他元素因为基线文字对齐而发生偏离。
+*** TIPS 一种无法忽略的垂直居中方式：使用position： relative。尤其适合于父元素只有一个子元素的情形时，比如：
+	<div class=parent>
+	    <div class=child></div>
+	</div>
+	这种情形下，只需要使用
+	.child {
+	    position: relative;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	就可以实现垂直居中了，这种方式的有点是修改代码少、只需要修改子元素样式；兼容性好，没有使用css新特性；无需考虑行高问题，即使parent与其他元素并排也完全没有问题。缺点是父元素只能有这一个子元素，不过这也不是大问题，多嵌套一层div问题也不大。
+	除了上面提到的那种方法外，还有个方法实现垂直居中，使用table布局，代码如下：
+	.parent {
+	    display: table;
+	}
+
+	.child {
+	    display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+	}
+	与使用relative布局相比，它更优秀的地方在于它可以有几个子元素，某些布局中还是能发挥奇效的。
+*** TIPS 关于css的定位，一个元素相对于一个元素总是比相对于几个元素定位要来得简单，所以我们常常能看到一个父元素下面再嵌套一个子元素，然后再嵌套几个子元素，使用外层一对一的来进行整体定位，内层一对多的关系进行继续定位，从而实现更精确的操控，这也是挺常用的css技巧了。
+** 2018/04/12
+*** TODO R.pipe实现函数复写，使用reduce实现compose。
+*** TIPS vue中，并不是所有的数据都需要挂在data下，需要响应式的才要，这样可以减少get/set的数量，可能对性能有微小的提升，更大的好处在于能使响应式的data变得更清晰。
+*** TODO whistle比fiddler强大的地方在哪呢，主要在于mock。fiddler对mock的能力有限，而whistle却很强大，为什么呢？主要在于whistle允许使用者使用请求路径中的参数，正式因为这一维度的扩充，使得whistle极其强大。
+** 2018/04/16
+*** git一个本地代码仓库可以追踪几个远程仓库。通常情况下，我们添加远程仓库使用的git remote add origin xxx.git这样的意思是添加了一个名为origin的远程仓库，我们可以继续添加，比如git remote add gitlab xxx.git，这样就又添加了一个远程仓库，名为gitlab。这样以后在提交时，如果需要推送到这个仓库，使用git push gitlab branchName就可以了。
+*** TIPS js的reduce函数实际上就是一个简单的递归，它表达的是形如f(n)=g(f(n-1),n)。多数需要递归场景我们可以使用它来进行表达。
+** 2018/04/17
+*** 约定优于配置，编程过程中非常重要的准则之一，通过规定统一的规范来约束开发人员，从而简化配置，提高可维护性。我们可以这么来理解，通过统一的约定naming问题实现对问题的建模，极大简化问题的复杂性，软件编程过程中这一问题得到了广泛的验证。
+** 2018/04/19
+*** 默认情况下，qq截图时显示的颜色是rgb格式的，如果想换成十六机制格式，直接按住ctrl键就好了，非常实用。
+*** TODO vue中使用回调将子组件数据传递到父组件与使用事件来进行传递有什么区别？两种方式的适用性在哪？
+** 2018/04/23
+*** vue中，把icon当成一个vue组件相比于直接用class，我们能够在class生效前对icon进行一些处理，获得更大的灵活性，同时，接口也更加的优雅。
+** 2018/04/24
+*** offsetWidth/offsetHeight与getBoundingClientRect都是相对于视口的宽高，与他们relative对象的位置无关，前者会四舍五入，后者不会。
+*** IMPORTANT vue dom更新的原理，在compile dom树时，哪个dom元素上有哪些directive，哪些watcher是非常容易得到的，当数据修改触发watcher时，我们自然能够反向查找出watch关联的dom进行dom更新，这样就避免了全dom树更新的情况了。
+*** vue中compiler的作用是将模板转化为render function。正式因为这一步，dom树转化为了render树，dom树中的指令被解析了出来，我们才能在这棵‘更加精确的dom树’中进行操作，更加精确的控制dom。
+*** 关于虚拟dom，其关键是实现:
+	1. h（dom,vnode） --> 将vnode挂载到dom下，实现链接
+	2. patch(vnode, newVnode) --> 比较两个vnode，如果旧vnode已经链接到了dom元素上，更新它。
+*** 关于js的this，如果是对象嵌套调用时，this的值是外层一级的对象，而不是最外层，因为对于js，它的求值是一级一级进行的，函数嵌套调用前的最后一个对象是哪个，函数里面的this就是哪个。
+** 2018/04/25
+*** background-clip设定背景区域，也就是背景在包围盒中的那一部分显示。取值有四个，也就是四个盒子，border-box、padding-box、content-box、text,范围由大到小。与之非常相似的还有box-sizing,设定宽高的包围盒，但是它的取值只有两个盒子，border-box、content-box、padding-box（已废弃）。
+*** 在编程过程中应该组件有有意识的转化为面向服务编程，一个函数就是一个服务，尽可能的编写容易被复用的函数，只有这样，写起代码来才能越来越快。
+*** async/await的引入无可避免的引入了复杂性，特别是函数是同步函数还是异步函数这一点上，没有标async的函数并不一定不是异步函数，async只是表示这个函数一定会返回一个promise，但是我们没有办法限制普通函数不返回promise，在这种情况下，没有async的函数同样也是异步函数。
+** 2018/04/26
+*** TODO 在编写组件时，如何解决定位问题？
+** 2018/04/27
+*** UI组件应该是无状态的，所有的状态应该尽量由外部传入，这样状态维护起来会比较容易.
+*** 如何正确编写textarea组件？首先textarea内部需要有自己的data来维护自己内部的数据，然后外部也需要一个data，监听内部的input事件往外抛，更新外部的data。
+*** 关于jsonp，实际上就是在本地创建了一个函数定义，然后通过script标签来请求函数调用，js被下载完执行时直接就是个函数调用，这样数据就被传输到了函数定义中，数据也就拿到了。
